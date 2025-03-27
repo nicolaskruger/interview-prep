@@ -7,7 +7,10 @@ function minimumBribes(q: number[]): void {
     
     const badPeoples = ():boolean => 
         smarts.some(sheet => sheet>= 2)
-    const order = (q:number[]):number => {
+    const order = (q: number[]): number => {
+        let count = 0;
+        let cursor = 0;
+        
         const notCool = (i: number) => {
             smarts[q[i]-1]++
             return q;
@@ -20,9 +23,17 @@ function minimumBribes(q: number[]): void {
         } 
         const isOrder = () => q.every((v, i) => (v-1) === i)
         const isNotOrder = () => !isOrder()
-        for(let i = 0; i < q.length - 1; i++)
-            if(q[i]>q[i+1])return 1 + order(notCool(i) && swap(i));
-        return isNotOrder() ? order(q): 0 
+        while(isNotOrder()){
+            if(q[cursor]>q[cursor+1]) {
+                ++count;
+                notCool(cursor);
+                swap(cursor);
+                cursor = 0;
+            } else{
+                cursor = (cursor+1)%q.length;
+            }
+        }
+        return count;        
     }
     const times = order(q)
     if(badPeoples())
