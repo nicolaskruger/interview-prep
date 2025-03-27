@@ -1,5 +1,3 @@
-
-
 function minimumBribes(q: number[]): void {
     // Write your code here
     const smarts = q.map(_ => 0)
@@ -35,9 +33,7 @@ function minimumBribes(q: number[]): void {
         }
         return count;        
     }
-    const times = order(q)
-    if(badPeoples())
-        c.log("Too chaotic")
-    else
-        c.log(times)
-}
+  }
+minimumBribes([2, 1, 5, 3, 4]); // 3
+minimumBribes([2, 5, 1, 3, 4]); // Too chaotic
+minimumBribes([1, 2, 5, 3, 7, 8, 6, 4]); // 7
