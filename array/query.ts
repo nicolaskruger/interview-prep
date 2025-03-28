@@ -12,21 +12,20 @@ function arrayManipulation(n: number, queries: number[][]): number {
           const queue: Query[] = [];
           
           if(a===x && b===y) return [[x, y, z + k]]
-          if(a===x && b > y) return [[x, y - 1, z + k], [y, b, z]]
-          if(a===x && b < y) return []
-          if(a > x && b===y) return []
-          if(a > x && b > y) return []
-          if(a > x && b < y) return []
-          if(a < x && b===y) return []
-          if(a < x && b > y) return []
-          if(a < x && b < y) return []
+          if(a===x && b > y) return [[x, y, z + k], [y + 1, b, k]]
+          if(a===x && b < y) return [[x, b, z + k], [b + 1, y, z]]
+          if(a > x && b===y) return [[x, a - 1, z], [a, b, z + k]]
+          if(a > x && b > y) return [[x, a - 1, z], [a, y, z + k], [y + 1, b, k]]
+          if(a > x && b < y) return [[x, a - 1, z], [a, b, z + k], [b + 1, y, z]]
+          if(a < x && b===y) return [[a, x - 1, k], [x, b, z + k]]
+          if(a < x && b > y) return [[a, x - 1, k], [x, y, z + k], [y + 1, b, k]]
+          if(a < x && b < y) return [[a, x - 1, k], [x, b, z + k], [b + 1, y, z]]
 
           return queue;
         };
         return joinQuery();
       })
       .flat(1);
-    console.log(res);
     return res;
   };
 
