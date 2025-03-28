@@ -1,3 +1,10 @@
+import * as fs from 'fs';
+
+const fetchData = () => 
+  fs.readFileSync("query.data").toString().split(/\n/)
+    .map(str => str.split(" ").map(v => Number(v)));
+
+
 function arrayManipulation(n: number, queries: number[][]): number {
   // Write your code here
   type Query = [number, number, number];
@@ -26,6 +33,7 @@ function arrayManipulation(n: number, queries: number[][]): number {
         return joinQuery();
       })
       .flat(1);
+      console.log(res)
     return res;
   };
 
@@ -33,11 +41,7 @@ function arrayManipulation(n: number, queries: number[][]): number {
     ...queries.reduce(split, [[1, n, 0]] as Query[]).map(([_, __, res]) => res)
   );
 }
-const res = arrayManipulation(5, [
-  [1, 2, 100],
-  [2, 5, 100],
-  [3, 4, 100],
-]);
+const res = arrayManipulation(40, fetchData());
 
 // const res = arrayManipulation(10, [
 //   [2, 6, 8],
