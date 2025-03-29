@@ -8,12 +8,25 @@ const fetchData = () =>
 function arrayManipulation(n: number, queries: number[][]): number {
   // Write your code here
   type Query = [number, number, number];
+  type DQuery = {[key:string]: Query};
   const split = (queries: Query[], query: Query): Query[] => {
+    const dic:DQuery = {}
+    const upsert = (q: Query) => {
+      const toKey = ([a, b]: Query): string => `${a}-${b}`;
+      const getVal = () => dic[toKey(q)]
+      const getPoint = () => getVal().slice(-1)[0];
+      const isSmaller = () => getPoint() < q[2];
+      const shouldUpsert = () => !getVal() || getVal() && isSmaller();
+      if(shouldUpsert()){
+        dic[toKey(q)] = q;  
+      }
+    }
+    upsert(query);
     const [a, b, k] = query;
     const res = queries
-      .map((q) => {
-        const [x, y, z] = q;
+      .reduce((dic, q) => {
         const joinQuery = (): Query[] => {
+          const [x, y, z] = q;
           const isNotColliding = () => (y > b && x > b) || (y < a && x < a);
           if (isNotColliding()) return [q];
           const queue: Query[] = [];
@@ -30,11 +43,11 @@ function arrayManipulation(n: number, queries: number[][]): number {
 
           return queue;
         };
-        return joinQuery();
-      })
-      .flat(1);
-      console.log(res)
-    return res;
+        joinQuery().forEach(upsert);
+        return dic;
+      }, dic);
+
+    return Object.values(res);
   };
 
   return Math.max(
