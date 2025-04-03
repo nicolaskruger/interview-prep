@@ -2,21 +2,36 @@ const fs = require("fs");
 
 function countTriplets(arr:number[], r:number) {
     type Dic = {
-        [key: string]: number
+        [key: string]: [number]
     }
 
-    const dic = () => arr.reduce((acc, curr) => {
-        if(!acc[curr]) acc[curr] = 1;
-        else ++acc[curr];
+    const dic = () => arr.reduce((acc, curr, i) => {
+        if(!acc[curr]) acc[curr] = [i];
+        else acc[curr].push(i);
         return acc;
     }, {} as Dic);
 
     const calc = (dic: Dic) => {
-        const max = () => r*Math.floor(Math.max(...arr)/r);
-        const min = () => 1;
-        let triple = [min(), min()*r, min()*r*r];
-        const getLast = () => triple.slice(-1)[0];
-        const next = () => triple = [...triple.slice(1), getLast()*r]
+        const loadSort = () => [...new Set(arr)]
+        const _sort = loadSort()
+        let _i = 0;
+        const next = () => sort()[++_i]
+        const sort = () => _sort;
+        const curr = () => sort()[_i];
+        const fetchTriple = () => [curr(), curr()*r, curr()*r*r];
+        const isLast = () => _i === (sort().length - 1) 
+
+        const calcTriple = () => {
+            const [a, b, c] = fetchTriple().map(tp => dic[tp]);
+            if ([a, b, c].some(v => !v)) return 0
+            return a.reduce((res, _a) => 
+                 res + b.filter(_b => _b >= _a)
+                .reduce((res, _b) => 
+                    res + c.filter(_c => _c >= _b).length 
+                    , 0)
+            , 0)
+        }
+
         let count = 0;
         
         const isROne = () => r === 1;
@@ -24,12 +39,9 @@ function countTriplets(arr:number[], r:number) {
             let l = arr.length
             return Math.floor(l*--l*--l/6)
         } 
-        const sum = () =>  triple.reduce((acc, curr) => {
-                const val = () => dic[curr]? dic[curr] : 0
-                return acc*val();
-            }, 1)
+        const sum = () =>  calcTriple()
         if(isROne()) return calcOne()
-        while(getLast() <= max()){
+        while(!isLast()){
             count += sum();
             next();            
         }
