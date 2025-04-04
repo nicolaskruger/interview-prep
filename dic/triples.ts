@@ -2,53 +2,33 @@ const fs = require("fs");
 
 function countTriplets(arr:number[], r:number) {
     type Dic = {
-        [key: string]: [number]
+        [key: string]: number[]
     }
 
-    const dic = () => arr.reduce((acc, curr, i) => {
-        if(!acc[curr]) acc[curr] = [i];
-        else acc[curr].push(i);
-        return acc;
+    const one = () => 1;
+    const two = () => 2;
+    const tree = () => 3;
+
+    const toFKey = (num:number) => `${num};${num*r};${num*r*r}`;
+    const toSKey = (num:number) => `${Math.floor(num/r)};${num};${num*r}`;
+    const toTKey = (num:number) => `${Math.floor(num/(r*r))};${Math.floor(num/r)};${num}`;
+      
+    const dic = () => arr.reduce((dic, num) => {
+        const f = () =>  dic[toFKey(num)];
+        const setUpF = () => dic[toFKey(num)] = [one()];
+        const s = () => dic[toSKey(num)];
+        const si = () => s().findIndex(v => v === one())
+        const t = () => dic[toTKey(num)];
+        const ti = () => t().findIndex(v => v === two())
+        if(t()) t()[ti()] = tree();
+        if(s()) s()[si()] = two();
+        if(!f()) setUpF();
+        else f().push(one())
+
+        return dic
     }, {} as Dic);
 
-    const calc = (dic: Dic) => {
-        const loadSort = () => [...new Set(arr)]
-        const _sort = loadSort()
-        let _i = 0;
-        const next = () => sort()[++_i]
-        const sort = () => _sort;
-        const curr = () => sort()[_i];
-        const fetchTriple = () => [curr(), curr()*r, curr()*r*r];
-        const isLast = () => _i === (sort().length - 1) 
-
-        const calcTriple = () => {
-            const [a, b, c] = fetchTriple().map(tp => dic[tp]);
-            if ([a, b, c].some(v => !v)) return 0
-            return a.reduce((res, _a) => 
-                 res + b.filter(_b => _b >= _a)
-                .reduce((res, _b) => 
-                    res + c.filter(_c => _c >= _b).length 
-                    , 0)
-            , 0)
-        }
-
-        let count = 0;
-        
-        const isROne = () => r === 1;
-        const calcOne = () => {
-            let l = arr.length
-            return Math.floor(l*--l*--l/6)
-        } 
-        const sum = () =>  calcTriple()
-        if(isROne()) return calcOne()
-        while(!isLast()){
-            count += sum();
-            next();            
-        }
-        return count
-    }
-
-    return calc(dic());
+    return Object.values(dic()).flat(1).filter(num => num === tree()).length
 }
 
 const input = () => {
