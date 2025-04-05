@@ -1,29 +1,37 @@
 var fs = require("fs");
 function countTriplets(arr, r) {
+    var zero = function () { return 0; };
     var one = function () { return 1; };
     var two = function () { return 2; };
     var tree = function () { return 3; };
+    var oneIdx = function () { return 0; };
+    var twoIdx = function () { return 1; };
+    var treeIdx = function () { return 2; };
     var toFKey = function (num) { return "".concat(num, ";").concat(num * r, ";").concat(num * r * r); };
     var toSKey = function (num) { return "".concat(Math.floor(num / r), ";").concat(num, ";").concat(num * r); };
     var toTKey = function (num) { return "".concat(Math.floor(num / (r * r)), ";").concat(Math.floor(num / r), ";").concat(num); };
     var dic = function () { return arr.reduce(function (dic, num) {
         var f = function () { return dic[toFKey(num)]; };
-        var setUpF = function () { return dic[toFKey(num)] = [one()]; };
+        var setUp = function () { return dic[toFKey(num)] = [one(), zero(), zero()]; };
         var s = function () { return dic[toSKey(num)]; };
-        var si = function () { return s().findIndex(function (v) { return v === one(); }); };
         var t = function () { return dic[toTKey(num)]; };
-        var ti = function () { return t().findIndex(function (v) { return v === two(); }); };
+        var add = function (get, from, to) {
+            get()[to()] += get()[from()];
+        };
         if (t())
-            t()[ti()] = tree();
+            add(t, twoIdx, treeIdx);
         if (s())
-            s()[si()] = two();
+            add(s, oneIdx, twoIdx);
         if (!f())
-            setUpF();
+            setUp();
         else
-            f().push(one());
+            ++f()[oneIdx()];
         return dic;
     }, {}); };
-    return Object.values(dic()).flat(1).filter(function (num) { return num === tree(); }).length;
+    return Object.values(dic()).map(function (_a) {
+        var a = _a[0], b = _a[1], c = _a[2];
+        return c;
+    }).reduce(function (acc, curr) { return acc + curr; }, 0);
 }
 var input = function () {
     var file = function () { return fs.readFileSync("triples.txt").toString(); };
