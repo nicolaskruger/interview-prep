@@ -8,7 +8,8 @@ function freqQuery(queries:[number, number][]):number[] {
         [num: number]: number
     }
 
-    const freqNum: FreqNum = {}
+    const freqNum: FreqNum = {
+    }
     const numFreq: NumFreq = {}
 
     const one = () => 1;
@@ -28,7 +29,7 @@ function freqQuery(queries:[number, number][]):number[] {
         }
         if(!has(num)){
             numFreq[num] = one();
-            freqNum[one()] = new Set([num])
+            populate(one(), num)
         } else {
             freqNum[currFreq()].delete(num)
             populate(next(), num)
@@ -37,16 +38,18 @@ function freqQuery(queries:[number, number][]):number[] {
 
     const pop = (num: number) => {
         if(!has(num)) return;
-        freqNum[numFreq[num]].delete(num)
-        delete numFreq[num];
+        const curr = () => numFreq[num]
+        const prev = () => --numFreq[num]
+        freqNum[curr()].delete(num)
+        if(prev() <= 0) 
+            delete numFreq[num];
+        else
+            freqNum[curr()].add(num)
     }
     const logger:number[] = []
-    let count = 0;
     const log = (freq: number) => {
         const _log = () => freqNum[freq] && (freqNum[freq].size > 0) ? 1 : 0;
         logger.push(_log())
-        if(count++ === 74)
-        console.log(_log(), freqNum)
     }
 
     const sw = {
@@ -56,8 +59,6 @@ function freqQuery(queries:[number, number][]):number[] {
     }
 
     queries.forEach(([op, data], i) => {
-        if(count == 74)
-        console.log(i)
         if(op && data)
             sw[op](data)
     })
